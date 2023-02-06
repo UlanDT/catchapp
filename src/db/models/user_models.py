@@ -28,8 +28,10 @@ class UserDB(Base):
     timezone = Column(Integer, nullable=True)
     hangout_time = Column(Integer, nullable=True)
     image_id = Column(Integer, ForeignKey(
-        "images.id", ondelete="CASCADE"), nullable=False)
+        "images.id", ondelete="CASCADE"), nullable=True)
     status = Column(String(255), nullable=True)
+    otp_code = Column(String(4), nullable=True)
+    otp_expiration = Column(DateTime(timezone=True), nullable=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(),
                         onupdate=func.now(), nullable=False)
 

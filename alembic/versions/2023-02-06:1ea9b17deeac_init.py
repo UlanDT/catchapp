@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 6e86186c2709
+Revision ID: 1ea9b17deeac
 Revises: 
-Create Date: 2023-02-06 19:56:36.922405
+Create Date: 2023-02-06 22:41:43.140734
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '6e86186c2709'
+revision = '1ea9b17deeac'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -33,8 +33,10 @@ def upgrade():
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('timezone', sa.Integer(), nullable=True),
     sa.Column('hangout_time', sa.Integer(), nullable=True),
-    sa.Column('image_id', sa.Integer(), nullable=False),
+    sa.Column('image_id', sa.Integer(), nullable=True),
     sa.Column('status', sa.String(length=255), nullable=True),
+    sa.Column('otp_code', sa.String(length=4), nullable=True),
+    sa.Column('otp_expiration', sa.DateTime(timezone=True), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['image_id'], ['images.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
