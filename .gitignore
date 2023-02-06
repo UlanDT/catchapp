@@ -1,0 +1,15 @@
+__pycache__
+.pytest_cache/
+.idea/*
+!/.idea/runConfigurations/
+.venv/
+venv/
+db.sqlite3
+*.pyc
+static/*
+postgres_data/
+.env
+.DS_Store
+.vscode
+media/
+config.yaml
