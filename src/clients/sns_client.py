@@ -20,6 +20,7 @@ class SNSClient:
         self.aws_secret_access_key = aws_secret_access_key
 
     async def send_message(self, phone: str, message: str):
+        """Method for sending messages to users."""
         async with self.session.client(
             service_name=self.service_name,
             region_name=self.region_name,

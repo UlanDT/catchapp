@@ -13,8 +13,8 @@ from src.db.db_base_class import Base
 class User(BaseModel):
     """User model for mapping UserDB instance."""
 
-    id: int
-    phone: str
+    id: Optional[int]
+    phone: Optional[str]
     name: Optional[str]
     timezone: Optional[int]
     hangout_time: Optional[int]
