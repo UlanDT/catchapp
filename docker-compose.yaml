@@ -2,7 +2,7 @@ version: '3.5'
 services:
   catchapp-db:
     image: postgres
-    container_name: catchapp_db
+    container_name: catchapp-db
     restart: unless-stopped
     ports:
       - "5432:5432"
@@ -18,7 +18,7 @@ services:
 
   catchapp-backend:
     build: .
-    container_name: catchapp_backend
+    container_name: catchapp-backend
     restart: unless-stopped
     ports:
       - "5050:5050"

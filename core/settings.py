@@ -30,9 +30,10 @@ class Settings(BaseSettings):
     DB_USER = os.environ.get("DB_USER")
     DB_PASSWORD = os.environ.get("DB_PASSWORD")
     DB_NAME = os.environ.get("DB_NAME")
+    DB_HOST = os.environ.get("DB_HOST")
 
-    postgres_async_url = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@127.0.0.1:5432/{DB_NAME}"
-    postgres_url = f"postgresql://{DB_USER}:{DB_PASSWORD}@127.0.0.1:5432/{DB_NAME}"
+    postgres_async_url = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
+    postgres_url = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 
     SQLALCHEMY_DATABASE_URI = postgres_url
 
