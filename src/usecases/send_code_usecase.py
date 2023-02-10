@@ -28,10 +28,9 @@ class SendCodeUseCase:
     async def process_send_code(self, phone: str):
         """Usecase entrypoint for generating code, message
         and sending to user."""
-
         code_data = await self._get_message()
         await self._set_otp_for_user(phone, code_data)
-        await self.client.send_message(phone, code_data.message)
+        # await self.client.send_message(phone, code_data.message)
 
     async def _get_message(self):
         code = await self.code_service.generate_code()

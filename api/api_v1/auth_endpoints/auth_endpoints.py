@@ -1,9 +1,12 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from starlette import status
+from starlette.responses import JSONResponse
 
+from api.api_v1.response import CommonResponse, LogInResponse
 from src.clients.sns_client import sns_client
 from src.db.db_session import AsyncSessionLocal
+from src.exceptions.login_exceptions import OtpVerificationException
 from src.repositories.user_repository import UserRepository
 from src.services.datetime_service import datetime_service
 from src.services.generate_code import generate_code_service
@@ -22,11 +25,10 @@ class PhoneIn(BaseModel):
     '/send_code',
     status_code=status.HTTP_200_OK,
     description='Send verification code to provided phone number',
-
+    response_model=CommonResponse
 )
 async def send_code(phone: PhoneIn):
     """Endpoint to send generated code to users using aws sns."""
-    # TODO need to return response, to be discussed with client side
     async with AsyncSessionLocal() as session:
         usecase = SendCodeUseCase(
             client=sns_client,
@@ -34,7 +36,27 @@ async def send_code(phone: PhoneIn):
             datetime_service=datetime_service,
             repository=UserRepository(session)
         )
-    return await usecase.process_send_code(phone.phone)
+    try:
+        await usecase.process_send_code(phone.phone)
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'success': False,
+                'message': 'Something went wrong',
+                'error': str(e),
+                'content': None
+            }
+        )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            'success': True,
+            'message': 'Message has been sent',
+            'error': None,
+            'content': None
+        }
+    )
 
 
 class LogIn(BaseModel):
@@ -47,6 +69,7 @@ class LogIn(BaseModel):
     '/login',
     status_code=status.HTTP_200_OK,
     description='Get access and refresh tokens',
+    response_model=LogInResponse
 )
 async def login(login_schema: LogIn):
     """Endpoint to get access/refresh token in exchange for correct code."""
@@ -56,4 +79,22 @@ async def login(login_schema: LogIn):
             datetime_service=datetime_service,
             token_service=token_service
         )
-    return await usecase.process_login(login_schema.phone, login_schema.code)
+    try:
+        return LogInResponse(
+            success=True,
+            message='Successfully logged in',
+            error=None,
+            content=await usecase.process_login(
+                login_schema.phone,
+                login_schema.code
+            ))
+    except OtpVerificationException as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'success': False,
+                'message': e.message,
+                'error': str(e),
+                'content': None
+            }
+        )
