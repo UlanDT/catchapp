@@ -1,32 +1,10 @@
-from datetime import datetime
-from typing import Optional
-
-from pydantic import BaseModel
 from sqlalchemy import (
     Column, String, func, DateTime, Integer, ForeignKey,
     UniqueConstraint
 )
+from sqlalchemy.orm import relationship
 
 from src.db.db_base_class import Base
-
-
-class User(BaseModel):
-    """User model for mapping UserDB instance."""
-
-    id: Optional[int]
-    phone: Optional[str]
-    name: Optional[str]
-    timezone: Optional[int]
-    hangout_time: Optional[int]
-    image_id: Optional[int]
-    status: Optional[str]
-    otp_code: Optional[str]
-    otp_expiration: Optional[datetime]
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
-
-    class Config:
-        orm_mode = True
 
 
 class UserDB(Base):
@@ -59,6 +37,8 @@ class UserDB(Base):
     otp_expiration = Column(DateTime(timezone=True), nullable=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(),
                         onupdate=func.now(), nullable=False)
+
+    image = relationship('ImageStorageDB', lazy='selectin')
 
 
 class ContactDB(Base):

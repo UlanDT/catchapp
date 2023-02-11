@@ -19,7 +19,7 @@ class LogInUsecase:
     token_service: AuthTokenService
 
     async def process_login(self, phone: str, code: str):
-        user = await self.repository.get_user_by_phone(phone)
+        user = await self.repository.get_user_otp_by_phone(phone)
 
         if not user.id:
             raise UserNotFoundException(message=f'User with phone {phone} not found')

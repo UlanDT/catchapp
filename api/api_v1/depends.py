@@ -4,8 +4,8 @@ from jose import jwt
 from pydantic import BaseModel, ValidationError
 from starlette import status
 
+from api.api_v1.response import User
 from core.settings import settings
-from src.db import User
 from src.db.db_session import AsyncSessionLocal
 from src.exceptions.user_exceptions import UserNotFoundException
 from src.repositories.user_repository import UserRepository

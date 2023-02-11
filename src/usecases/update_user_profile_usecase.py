@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from src.db import UserDB, User
 from src.repositories.user_repository import UserRepository
 from src.request_schemas.user_schemas import UserIn
 

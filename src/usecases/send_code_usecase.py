@@ -45,7 +45,7 @@ class SendCodeUseCase:
         )
 
     async def _set_otp_for_user(self, phone, code_data: CodeMetaData) -> None:
-        user = await self.repository.get_user_by_phone(phone)
+        user = await self.repository.get_user_otp_by_phone(phone)
 
         if not user:
             await self.repository.create_user_with_otp_code(

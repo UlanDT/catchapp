@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from psycopg2.errorcodes import (
     FOREIGN_KEY_VIOLATION,
 )
-from src.db import UserDB, User
+
+from api.api_v1.response import User, UserOTP
+from src.db import UserDB
 from src.exceptions.image_exceptions import ImageNotFoundException
 from src.request_schemas.user_schemas import UserIn
 
@@ -53,14 +55,14 @@ class UserRepository:
         )
         await self._db_session.commit()
 
-    async def get_user_by_phone(
+    async def get_user_otp_by_phone(
             self,
             phone: str
-    ) -> User:
+    ) -> UserOTP:
         """Get user by phone."""
         stmt = select(self.model).where(self.model.phone == phone)
         query = await self._db_session.execute(stmt)
-        return User.from_orm(query.scalar())
+        return UserOTP.from_orm(query.scalar())
 
     async def get_user_by_id(
             self,
