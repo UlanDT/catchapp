@@ -49,8 +49,8 @@ class User(BaseModel):
     @root_validator(pre=False)
     def set_media_urls(cls, values):
         image = values.get('image')
-        print(image)
-        image.image = cls.set_absolute_media_url(image.id)
+        if image:
+            image.image = cls.set_absolute_media_url(image.id)
         return values
 
     @staticmethod
