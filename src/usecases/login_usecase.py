@@ -21,7 +21,7 @@ class LogInUsecase:
     async def process_login(self, phone: str, code: str):
         user = await self.repository.get_user_otp_by_phone(phone)
 
-        if not user.id:
+        if not user:
             raise UserNotFoundException(message=f'User with phone {phone} not found')
         if not await self._user_otp_passed(code, user.otp_code, user.otp_expiration):
             raise OtpVerificationException(message='Code incorrect or inactive')

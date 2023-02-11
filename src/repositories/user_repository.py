@@ -62,7 +62,8 @@ class UserRepository:
         """Get user by phone."""
         stmt = select(self.model).where(self.model.phone == phone)
         query = await self._db_session.execute(stmt)
-        return UserOTP.from_orm(query.scalar())
+        user_db = query.scalar()
+        return UserOTP.from_orm(user_db) if user_db else None
 
     async def get_user_by_id(
             self,
