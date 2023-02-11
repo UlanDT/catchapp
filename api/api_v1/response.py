@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -10,8 +11,6 @@ class CommonResponse(BaseModel):
     success: bool
     message: str
     content: Optional[dict]
-    error: Optional[str]
-
 
 
 class LogInOut(BaseModel):
@@ -22,3 +21,19 @@ class LogInOut(BaseModel):
 
 class LogInResponse(CommonResponse):
    content: Optional[LogInOut]
+
+
+class User(BaseModel):
+    id: int
+    phone: str
+    name: Optional[str]
+    timezone: Optional[int]
+    hangout_time: Optional[int]
+    image_id: Optional[int]
+    status: Optional[str]
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+
+
+class UserResponse(CommonResponse):
+    content: Optional[User]

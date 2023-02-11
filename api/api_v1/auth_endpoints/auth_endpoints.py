@@ -7,6 +7,7 @@ from api.api_v1.response import CommonResponse, LogInResponse
 from src.clients.sns_client import sns_client
 from src.db.db_session import AsyncSessionLocal
 from src.exceptions.login_exceptions import OtpVerificationException
+from src.exceptions.user_exceptions import UserNotFoundException
 from src.repositories.user_repository import UserRepository
 from src.services.datetime_service import datetime_service
 from src.services.generate_code import generate_code_service
@@ -43,8 +44,7 @@ async def send_code(phone: PhoneIn):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
                 'success': False,
-                'message': 'Something went wrong',
-                'error': str(e),
+                'message': str(e),
                 'content': None
             }
         )
@@ -53,7 +53,6 @@ async def send_code(phone: PhoneIn):
         content={
             'success': True,
             'message': 'Message has been sent',
-            'error': None,
             'content': None
         }
     )
@@ -83,7 +82,6 @@ async def login(login_schema: LogIn):
         return LogInResponse(
             success=True,
             message='Successfully logged in',
-            error=None,
             content=await usecase.process_login(
                 login_schema.phone,
                 login_schema.code
@@ -94,7 +92,15 @@ async def login(login_schema: LogIn):
             content={
                 'success': False,
                 'message': e.message,
-                'error': str(e),
+                'content': None
+            }
+        )
+    except UserNotFoundException as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'success': False,
+                'message': e.message,
                 'content': None
             }
         )

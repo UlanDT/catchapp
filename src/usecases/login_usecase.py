@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 
 from src.exceptions.login_exceptions import OtpVerificationException
+from src.exceptions.user_exceptions import UserNotFoundException
 from src.repositories.user_repository import UserRepository
 from src.services.datetime_service import DateTimeService
 from src.services.token_service import AuthTokenService
@@ -20,6 +21,8 @@ class LogInUsecase:
     async def process_login(self, phone: str, code: str):
         user = await self.repository.get_user_by_phone(phone)
 
+        if not user.id:
+            raise UserNotFoundException(message=f'User with phone {phone} not found')
         if not await self._user_otp_passed(code, user.otp_code, user.otp_expiration):
             raise OtpVerificationException(message='Code incorrect or inactive')
 
