@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime
+from typing import List, Dict
 
+from pydantic import parse_obj_as
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -103,3 +105,17 @@ class UserRepository:
         await self._db_session.commit()
         await self._db_session.refresh(user_db)
         return User.from_orm(user_db)
+
+    async def get_users_by_phone(self, phones: List[str]) -> List[User]:
+        """Get list of users by their phone."""
+
+        stmt = select(self.model).where(self.model.phone.in_(phones))
+        query = await self._db_session.execute(stmt)
+        return parse_obj_as(List[User], query.scalars().all())
+
+    async def bulk_create_users(self, users_data: List[Dict[str, str]]):
+        await self._db_session.run_sync(
+            lambda session: session.bulk_insert_mappings(
+                self.model, users_data
+            ))
+        await self._db_session.commit()

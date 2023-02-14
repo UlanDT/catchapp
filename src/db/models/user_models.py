@@ -45,14 +45,14 @@ class ContactDB(Base):
     """Contacts table."""
     __tablename__ = 'contacts'
 
-    user_id1 = Column(Integer, ForeignKey(
+    user_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
-    user_id2 = Column(Integer, ForeignKey(
+    contact_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
     status = Column(String(255), nullable=True)
 
     __table_args__ = (
         UniqueConstraint(
-            'user_id1', 'user_id2',
+            'user_id', 'contact_id',
             name='_user_id_uc'),
     )

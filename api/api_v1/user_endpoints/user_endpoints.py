@@ -26,7 +26,7 @@ async def get_user_profile(
     try:
         return UserResponse(
             success=True,
-            message='User profile successfully updated',
+            message='Success',
             error=None,
             content=user
         )
