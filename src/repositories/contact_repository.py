@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from pydantic import parse_obj_as
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db import ContactDB
@@ -16,16 +16,16 @@ class ContactRepository:
     def __init__(self, db_session: AsyncSession):
         self._db_session = db_session
 
-    async def get_user_contacts_by_user_id(
-            self,
-            user_id: int
-    ) -> List[Contact]:
+    async def get_user_contacts(self, user_id: int) -> List[Contact]:
         """Get user contacts by user_id."""
-        stmt = select(self.model).where(self.model.user_id == user_id)
+        stmt = select(self.model).where(or_(
+            self.model.user_id == user_id,
+            self.model.contact_id == user_id
+        ))
         query = await self._db_session.execute(stmt)
         return parse_obj_as(List[Contact], query.scalars().all())
 
-    async def bulk_create_contacts(self, users_data: List[Dict[str, str]]):
+    async def bulk_create_contacts(self, users_data: List[Dict[str, int]]):
         """Create contacts in bulk."""
 
         await self._db_session.run_sync(

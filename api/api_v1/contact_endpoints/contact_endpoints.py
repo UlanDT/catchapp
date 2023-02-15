@@ -3,17 +3,20 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from api.api_v1.depends import get_user
-from api.api_v1.response import UserResponse, User
+from api.api_v1.response import (
+    User, CommonResponse,
+    UserContactsResponse
+)
 from src.db.db_session import AsyncSessionLocal
-from src.exceptions.image_exceptions import ImageNotFoundException
-from src.exceptions.user_exceptions import UserNotFoundException
+from src.exceptions.contact_exceptions import ContactAlreadyExistsException
 from src.repositories.contact_repository import ContactRepository
 from src.repositories.user_repository import UserRepository
 from src.request_schemas.contact_schemas import ContactListIn
-from src.request_schemas.user_schemas import UserIn
-from src.usecases.contact_usecases.add_user_contacts import \
+from src.usecases.contact_usecases.add_user_contacts import (
     AddUserContactsUsecase
-from src.usecases.update_user_profile_usecase import UpdateUserProfileUsecase
+)
+from src.usecases.contact_usecases.get_user_contacts import \
+    GetUserContactsUsecase
 
 router = APIRouter()
 
@@ -22,44 +25,54 @@ router = APIRouter()
     '/',
     status_code=status.HTTP_200_OK,
     description='Add user contacts',
-    # response_model=UserResponse,
+    response_model=CommonResponse,
 )
 async def add_user_contacts(
-    contacts_in: ContactListIn,
-    user: User = Depends(get_user),
+        contacts_in: ContactListIn,
+        user: User = Depends(get_user),
 ):
-    # try:
     async with AsyncSessionLocal() as session:
         usecase = AddUserContactsUsecase(
             contact_repository=ContactRepository(session),
             user_repository=UserRepository(session)
         )
+    try:
         await usecase.add_user_contacts(
             user_id=user.id,
             contacts_in=contacts_in
         )
+    except ContactAlreadyExistsException as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'success': False,
+                'message': e.message,
+                'content': None
+            }
+        )
 
-    return UserResponse(
+    return CommonResponse(
         success=True,
-        message='User profile successfully updated',
-        error=None,
-        content=user
+        message='Contacts successfully added',
+        content=None
     )
-    # except UserNotFoundException as e:
-    #     return JSONResponse(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         content={
-    #             'success': False,
-    #             'message': str(e),
-    #             'content': None
-    #         }
-    #     )
-    # except Exception as e:
-    #     return JSONResponse(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         content={
-    #             'success': False,
-    #             'message': str(e),
-    #             'content': None
-    #         }
-    #     )
+
+
+@router.get(
+    '/',
+    status_code=status.HTTP_200_OK,
+    description='Get user contacts',
+    response_model=UserContactsResponse,
+)
+async def get_user_contacts(
+        user: User = Depends(get_user),
+):
+    async with AsyncSessionLocal() as session:
+        usecase = GetUserContactsUsecase(
+            contact_repository=ContactRepository(session),
+        )
+    return UserContactsResponse(
+        success=True,
+        message='Success',
+        content=await usecase.get_user_contacts(user)
+    )

@@ -20,13 +20,8 @@ class AddUserContactsUsecase:
 
     async def add_user_contacts(self, user_id: int,
                                 contacts_in: ContactListIn):
-        existing_contacts = await self.contact_repository.get_user_contacts_by_user_id(
+        existing_contacts = await self.contact_repository.get_user_contacts(
             user_id=user_id
-        )
-
-        await self._validate_contacts_amount(
-            contacts_amount=len(existing_contacts),
-            contacts_in_amount=len(contacts_in.contacts)
         )
 
         existing_users = await self.user_repository.get_users_by_phone(
@@ -50,26 +45,6 @@ class AddUserContactsUsecase:
         await self.contact_repository.bulk_create_contacts(
             [{"user_id": user_id, "contact_id": user.id} for user in users]
         )
-
-    async def _validate_contacts_amount(
-            self,
-            contacts_amount: int,
-            contacts_in_amount: int
-    ):
-        """Validate contact amount is less than required.
-
-        For MVP we need to make sure that there are no more than
-        10 contacts per user.
-        """
-        if contacts_amount >= self.contacts_limit:
-            raise ContactAmountLimitException(
-                message=f'User already has {self.contacts_limit} contacts'
-            )
-        if contacts_amount + contacts_in_amount >= self.contacts_limit:
-            raise ContactAmountLimitException(
-                message=f'User already has {contacts_amount} contacts. '
-                        f'Can only add {self.contacts_limit - contacts_amount}.'
-            )
 
     async def _validate_contacts_do_not_exist(
             self,

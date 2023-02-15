@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, root_validator
 
 from core.settings import settings
+from src.schemas import Contact
 
 
 class CommonResponse(BaseModel):
@@ -33,8 +34,8 @@ class Image(BaseModel):
 
 
 class User(BaseModel):
-    id: int
-    phone: str
+    id: Optional[int]
+    phone: Optional[str]
     name: Optional[str]
     timezone: Optional[int]
     hangout_time: Optional[int]
@@ -56,6 +57,14 @@ class User(BaseModel):
     @staticmethod
     def set_absolute_media_url(image_id) -> Optional[str]:
         return f'http://{settings.domain_name}{settings.api_v1_path}/image/?image_id={image_id}'
+
+
+class UserContacts(User):
+    contacts: Optional[List[Contact]]
+
+
+class UserContactsResponse(CommonResponse):
+    content: Optional[UserContacts]
 
 
 class UserOTP(BaseModel):

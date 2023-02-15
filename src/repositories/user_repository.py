@@ -10,7 +10,7 @@ from psycopg2.errorcodes import (
     FOREIGN_KEY_VIOLATION,
 )
 
-from api.api_v1.response import User, UserOTP
+from api.api_v1.response import User, UserOTP, UserContacts
 from src.db import UserDB
 from src.exceptions.image_exceptions import ImageNotFoundException
 from src.request_schemas.user_schemas import UserIn
