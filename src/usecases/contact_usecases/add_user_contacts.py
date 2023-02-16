@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from typing import List
 
 from api.api_v1.response import User
-from src.exceptions.contact_exceptions import ContactAmountLimitException, \
+from src.exceptions.contact_exceptions import (
     ContactAlreadyExistsException
+)
 from src.repositories.contact_repository import ContactRepository
 from src.repositories.user_repository import UserRepository
 from src.request_schemas.contact_schemas import ContactListIn, ContactIn
@@ -51,7 +52,8 @@ class AddUserContactsUsecase:
             existing_contacts: List[Contact],
             existing_users: List[User]
     ):
-        existing_contact_ids = [contact.contact_id for contact in existing_contacts]
+        existing_contact_ids = [contact.contact_id for contact in
+                                existing_contacts]
         for user in existing_users:
             if user.id in existing_contact_ids:
                 raise ContactAlreadyExistsException(

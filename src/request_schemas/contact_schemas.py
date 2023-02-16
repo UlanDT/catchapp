@@ -12,3 +12,8 @@ class ContactIn(BaseModel):
 class ContactListIn(BaseModel):
     """Schema used for updating user."""
     contacts: List[ContactIn]
+
+
+class ContactRemoveIdIn(BaseModel):
+    """Id of contacts to remove."""
+    contact_id: int

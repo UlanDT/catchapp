@@ -11,12 +11,19 @@ from src.db.db_session import AsyncSessionLocal
 from src.exceptions.contact_exceptions import ContactAlreadyExistsException
 from src.repositories.contact_repository import ContactRepository
 from src.repositories.user_repository import UserRepository
-from src.request_schemas.contact_schemas import ContactListIn
+from src.request_schemas.contact_schemas import (
+    ContactListIn,
+    ContactRemoveIdIn
+)
 from src.usecases.contact_usecases.add_user_contacts import (
     AddUserContactsUsecase
 )
-from src.usecases.contact_usecases.get_user_contacts import \
+from src.usecases.contact_usecases.delete_user_contacts import (
+    DeleteUserContactsUsecase
+)
+from src.usecases.contact_usecases.get_user_contacts import (
     GetUserContactsUsecase
+)
 
 router = APIRouter()
 
@@ -75,4 +82,30 @@ async def get_user_contacts(
         success=True,
         message='Success',
         content=await usecase.get_user_contacts(user)
+    )
+
+
+@router.delete(
+    '/',
+    status_code=status.HTTP_200_OK,
+    description="""Delete user contacts.\n
+    
+    Provide contact_ids or user_ids from list of contacts \n
+    depending on current user's id.
+    """,
+)
+async def delete_user_contacts(
+        contact_id: ContactRemoveIdIn,
+        user: User = Depends(get_user),
+):
+    async with AsyncSessionLocal() as session:
+        usecase = DeleteUserContactsUsecase(
+            repository=ContactRepository(session),
+        )
+
+    await usecase.delete_user_contacts(user.id, contact_id.contact_id)
+    return CommonResponse(
+        success=True,
+        message='Contacts successfully deleted',
+        content=None
     )
