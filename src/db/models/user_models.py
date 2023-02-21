@@ -37,13 +37,27 @@ class UserDB(Base):
     otp_expiration = Column(DateTime(timezone=True), nullable=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(),
                         onupdate=func.now(), nullable=False)
+    # contacts = relationship('ContactDB', lazy='selectin')
 
     image = relationship('ImageStorageDB', lazy='selectin')
+    contacts = relationship("ContactDB", lazy='selectin', foreign_keys="ContactDB.user_id", backref='contact_user')
 
 
 class ContactDB(Base):
     """Contacts table."""
     __tablename__ = 'contacts'
+
+    class Status:
+        """Status of meeting between two contacts."""
+        bingo = 'Bingo Time'  # Bingo started, but haven't been used by neither of contacts status date += 96 if one of the contacts chose 1 of the slots.
+        scheduled = 'Scheduled'  # meeting scheduled
+        call = 'Call'  # from scheduled, happens at the time of meeting.
+        failed_bingo = 'Failed Bingo'  # 1 of the contacts didn't participate in bingo. Failed to match, it happens when datetime of 9 slots have passed
+        failed_match = 'Failed Match'  # both contacts couldn't match at least 1 out of 9 slots
+        failed_to_call = 'Failed To Call'  # if both contacts failed to call. from call
+        success = 'Success'  # Both contacts are in a meeting. from call
+        inactive = 'Inactive'  # from success or failed to ...  hangout_time +- 2 days.
+        outdated = 'Outdated'  # Old meetings that are no longer valid
 
     user_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
@@ -51,8 +65,18 @@ class ContactDB(Base):
         "users.id", ondelete="CASCADE"), nullable=False)
     status = Column(String(255), nullable=True)
 
+    user = relationship("UserDB", lazy='selectin', foreign_keys="ContactDB.contact_id")
+    # user = relationship('UserDB', lazy='selectin')
+
     __table_args__ = (
         UniqueConstraint(
             'user_id', 'contact_id',
             name='_user_id_uc'),
     )
+
+
+# задачка
+# будет проходить по каждому юзеру и вытаскивать hangout time
+# пройти по каждому их контакту и вытащить hangout_time каждого из контактов
+# в случае если hangout_time позволяет им замачтиться, то начать бинго
+# когда у юзера с его контаком был бинго до этого?

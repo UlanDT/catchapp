@@ -8,7 +8,8 @@ class MeetingDB(Base):
     __tablename__ = 'meetings'
 
     contacts_id = Column(Integer, ForeignKey(
-        "contacts.id", ondelete="CASCADE"), nullable=False)
+        "contacts.id", ondelete="CASCADE"), nullable=False, unique=True)
     meeting_at = Column(DateTime(timezone=True), nullable=True, unique=False)
     user_one = Column(JSON())
     user_two = Column(JSON())
+    slots = Column(JSON())

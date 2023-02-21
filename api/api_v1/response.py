@@ -86,3 +86,21 @@ class UserOTP(BaseModel):
 
 class UserResponse(CommonResponse):
     content: Optional[User]
+
+
+class ContactUser(BaseModel):
+    """Schema used to map ContactDB query."""
+
+    id: int
+    user_id: int
+    contact_id: int
+    status: Optional[str]
+    created_at: datetime
+    user: User
+
+    class Config:
+        orm_mode = True
+
+
+class BingoUserContacts(User):
+    contacts: List[Optional[ContactUser]]
