@@ -1,4 +1,5 @@
 """Celery initialization and configuration."""
+import os
 
 from celery import Celery, signature
 from src.db.db_session import SessionLocal
@@ -10,12 +11,14 @@ from src.usecases.bingo_usecase import BingoUsecase
 app = Celery("catchapp")
 app.autodiscover_tasks()
 
+TIMOUT = os.environ.get("TIMEOUT")
+
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender: Celery, **kwargs) -> None:
     """Periodic tasks go here."""
     sender.add_periodic_task(
-        10,  # every 10 seconds
+        TIMOUT,  # every 10 seconds
         signature("core.celery.schedule_meeting"),
         name="Schedule meeting.",
     )
