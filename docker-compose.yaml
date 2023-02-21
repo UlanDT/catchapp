@@ -30,6 +30,34 @@ services:
       - ./static:/app/static
       - ./media:/app/media
 
+  rabbitmq-dev:
+    image: rabbitmq:latest
+    container_name: rabbitmq-dev
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  celery-dev:
+    build: .
+    container_name: celery-dev
+    restart: unless-stopped
+    command: celery
+    depends_on:
+      - catchapp-db
+      - catchapp-backend
+      - rabbitmq-dev
+
+  celery-beat-dev:
+    build: .
+    container_name: celery-beat-dev
+    restart: unless-stopped
+    command: celery-beat
+    depends_on:
+      - catchapp-db
+      - catchapp-backend
+      - rabbitmq-dev
+
 
 volumes:
   postgres_data:

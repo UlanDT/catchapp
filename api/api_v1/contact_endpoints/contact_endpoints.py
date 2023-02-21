@@ -88,6 +88,7 @@ async def get_user_contacts(
 @router.delete(
     '/',
     status_code=status.HTTP_200_OK,
+    response_model=CommonResponse,
     description="""Delete user contacts.\n
     
     Provide contact_ids or user_ids from list of contacts \n
