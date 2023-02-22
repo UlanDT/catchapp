@@ -12,11 +12,8 @@ if [ "$1" = 'unittest' ]; then
     exit $?
 elif [ "$1" = 'celery' ]; then
     echo "Starting celery worker..."
-    celery -A engines.sync_engines.navi_celery worker -c${CELERY_WORKERS} --loglevel=INFO
+    celery -A core.celery worker -c${CELERY_WORKERS} --loglevel=INFO
 
-elif [ "$1" = 'celery-beat' ]; then
-    echo "Starting celery beat..."
-    celery -A engines.sync_engines.navi_celery beat --loglevel=INFO
 else
     echo "Waiting for postgres..."
 
