@@ -10,6 +10,6 @@ class MeetingDB(Base):
     contacts_id = Column(Integer, ForeignKey(
         "contacts.id", ondelete="CASCADE"), nullable=False, unique=True)
     meeting_at = Column(DateTime(timezone=True), nullable=True, unique=False)
-    user_one = Column(JSON())
-    user_two = Column(JSON())
+    user_data = Column(JSON())
+    contact_data = Column(JSON())
     slots = Column(JSON())

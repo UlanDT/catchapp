@@ -4,7 +4,7 @@ from typing import Optional, List
 from pydantic import BaseModel, root_validator
 
 from core.settings import settings
-from src.schemas import Contact
+from src.schemas import Contact, Meeting
 
 
 class CommonResponse(BaseModel):
@@ -104,3 +104,7 @@ class ContactUser(BaseModel):
 
 class BingoUserContacts(User):
     contacts: List[Optional[ContactUser]]
+
+
+class MeetingResponse(CommonResponse):
+    content: Optional[Meeting]

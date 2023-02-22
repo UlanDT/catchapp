@@ -47,3 +47,15 @@ class ContactRepository:
         await self._db_session.execute(stmt)
         await self._db_session.commit()
 
+    async def get_contact(self, user_id: int, contact_id: int) -> Contact:
+        stmt = select(self.model).where(or_(
+            and_(
+                self.model.user_id == user_id,
+                self.model.contact_id == contact_id
+            ), and_(
+                self.model.user_id == contact_id,
+                self.model.contact_id == user_id
+            ))
+        )
+        query = await self._db_session.execute(stmt)
+        return Contact.from_orm(query.scalar())

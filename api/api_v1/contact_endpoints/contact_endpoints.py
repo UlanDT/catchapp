@@ -15,14 +15,8 @@ from src.request_schemas.contact_schemas import (
     ContactListIn,
     ContactRemoveIdIn
 )
-from src.usecases.contact_usecases.add_user_contacts import (
-    AddUserContactsUsecase
-)
-from src.usecases.contact_usecases.delete_user_contacts import (
-    DeleteUserContactsUsecase
-)
-from src.usecases.contact_usecases.get_user_contacts import (
-    GetUserContactsUsecase
+from src.usecases.contact_usecases import (
+    AddUserContactsUsecase, GetUserContactsUsecase, DeleteUserContactsUsecase,
 )
 
 router = APIRouter()

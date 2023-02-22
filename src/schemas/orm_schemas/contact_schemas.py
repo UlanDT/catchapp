@@ -4,7 +4,6 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-
 class Contact(BaseModel):
     """Schema used to map ContactDB query."""
 

@@ -11,8 +11,8 @@ from src.usecases.bingo_usecase import BingoUsecase
 app = Celery("catchapp")
 app.autodiscover_tasks()
 
-TIMOUT = os.environ.get("TIMEOUT")
-
+TIMOUT = os.environ.get("TIMEOUT", 10)
+print(TIMOUT, 'timeout')
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender: Celery, **kwargs) -> None:
