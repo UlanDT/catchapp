@@ -12,13 +12,13 @@ app = Celery("catchapp")
 app.autodiscover_tasks()
 
 TIMOUT = os.environ.get("TIMEOUT", 10)
-print(TIMOUT, 'timeout')
+
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender: Celery, **kwargs) -> None:
     """Periodic tasks go here."""
     sender.add_periodic_task(
-        TIMOUT,  # every 10 seconds
+        TIMOUT,
         signature("core.celery.schedule_meeting"),
         name="Schedule meeting.",
     )
