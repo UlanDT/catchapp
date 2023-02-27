@@ -2,7 +2,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db import MeetingDB
-from src.schemas import Meeting
+from src.schemas.orm_schemas.meeting_schemas import Meeting
 
 
 class MeetingRepository:

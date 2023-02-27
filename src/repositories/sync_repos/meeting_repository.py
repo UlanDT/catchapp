@@ -1,7 +1,11 @@
+from typing import List
+
+from pydantic import parse_obj_as
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from src.db import MeetingDB
+from src.schemas.orm_schemas.meeting_schemas import Meeting
 
 
 class SyncMeetingRepository:
@@ -34,3 +38,14 @@ class SyncMeetingRepository:
             self._create_slots(contacts_id, slots)
         else:
             self._update_slots(meeting, slots)
+
+    def get_meeting_slots(self) -> List[Meeting]:
+        stmt = select(self.model)
+        query = self._db_session.execute(stmt)
+        return parse_obj_as(List[Meeting], query.scalars().all())
+
+    def set_meeting_date(self, contacts_id: int, meeting_at):
+        stmt = (update(self.model).where(self.model.contacts_id == contacts_id)
+                .values(meeting_at=meeting_at))
+        self._db_session.execute(stmt)
+        self._db_session.commit()

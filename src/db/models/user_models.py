@@ -50,10 +50,10 @@ class ContactDB(Base):
     class Status:
         """Status of meeting between two contacts."""
         bingo = 'Bingo Time'  # Bingo started, but haven't been used by neither of contacts status date += 96 if one of the contacts chose 1 of the slots.
-        scheduled = 'Scheduled'  # meeting scheduled
+        scheduled = 'Scheduled'  #
         call = 'Call'  # from scheduled, happens at the time of meeting.
-        failed_bingo = 'Failed Bingo'  # 1 of the contacts didn't participate in bingo. Failed to match, it happens when datetime of 9 slots have passed
-        failed_match = 'Failed Match'  # both contacts couldn't match at least 1 out of 9 slots
+        failed_bingo = 'Failed Bingo'  #  Failed to match, it happens when datetime of 9 slots have passed
+        failed_match = 'Failed Match'
         failed_to_call = 'Failed To Call'  # if both contacts failed to call. from call
         success = 'Success'  # Both contacts are in a meeting. from call
         inactive = 'Inactive'  # from success or failed to ...  hangout_time +- 2 days.
@@ -66,7 +66,7 @@ class ContactDB(Base):
     status = Column(String(255), nullable=True)
 
     user = relationship("UserDB", lazy='selectin', foreign_keys="ContactDB.contact_id")
-    # user = relationship('UserDB', lazy='selectin')
+    meetings = relationship("MeetingDB", uselist=False, back_populates="contacts")
 
     __table_args__ = (
         UniqueConstraint(

@@ -8,7 +8,7 @@ from src.exceptions.contact_exceptions import (
 from src.repositories.contact_repository import ContactRepository
 from src.repositories.user_repository import UserRepository
 from src.request_schemas.contact_schemas import ContactListIn, ContactIn
-from src.schemas import Contact
+from src.schemas.orm_schemas.contact_schemas import Contact
 
 
 @dataclass

@@ -4,7 +4,8 @@ from typing import Optional, List
 from pydantic import BaseModel, root_validator
 
 from core.settings import settings
-from src.schemas import Contact, Meeting
+from src.schemas.orm_schemas.contact_schemas import Contact
+from src.schemas.orm_schemas.meeting_schemas import Meeting
 
 
 class CommonResponse(BaseModel):

@@ -3,6 +3,8 @@ from typing import Optional, Dict
 
 from pydantic import BaseModel
 
+from src.schemas.orm_schemas.contact_schemas import Contact
+
 
 class Meeting(BaseModel):
     """Schema used to map ContactDB query."""
@@ -13,6 +15,7 @@ class Meeting(BaseModel):
     user_data: Optional[Dict]
     contact_data: Optional[Dict]
     slots: Optional[Dict]
+    contacts: Contact
 
     class Config:
         orm_mode = True

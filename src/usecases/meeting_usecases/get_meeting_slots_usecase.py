@@ -8,7 +8,8 @@ from src.exceptions.contact_exceptions import (
 )
 from src.repositories.contact_repository import ContactRepository
 from src.repositories.meeting_repository import MeetingRepository
-from src.schemas import Contact, Meeting
+from src.schemas.orm_schemas.contact_schemas import Contact
+from src.schemas.orm_schemas.meeting_schemas import Meeting
 
 
 @dataclass

@@ -5,7 +5,7 @@ from sqlalchemy import select, or_, delete, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db import ContactDB
-from src.schemas import Contact
+from src.schemas.orm_schemas.contact_schemas import Contact
 
 
 class ContactRepository:

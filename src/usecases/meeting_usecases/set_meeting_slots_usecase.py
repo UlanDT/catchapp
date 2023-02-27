@@ -10,7 +10,7 @@ from src.exceptions.meeting_exceptions import \
     MeetingSlotsAlreadySelectedException
 from src.repositories.contact_repository import ContactRepository
 from src.repositories.meeting_repository import MeetingRepository
-from src.schemas import Contact
+from src.schemas.orm_schemas.contact_schemas import Contact
 
 
 @dataclass
