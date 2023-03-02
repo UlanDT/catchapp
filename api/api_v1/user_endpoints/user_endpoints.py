@@ -17,7 +17,7 @@ router = APIRouter()
 @router.get(
     '/',
     status_code=status.HTTP_200_OK,
-    description='Update user profile',
+    description='Get user profile',
     response_model=UserResponse,
 )
 async def get_user_profile(
@@ -71,7 +71,7 @@ async def update_user_profile(
             error=None,
             content=await usecase.update_user_profile(
                 user_in=user_in,
-                user_id=user.id
+                user_id=user
             ))
     except ImageNotFoundException as e:
         return JSONResponse(

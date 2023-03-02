@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytz
 
+from src.db import UserDB
 from src.exceptions.login_exceptions import OtpVerificationException
 from src.exceptions.user_exceptions import UserNotFoundException
 from src.repositories.user_repository import UserRepository
@@ -24,8 +25,11 @@ class LogInUsecase:
         if not user:
             raise UserNotFoundException(message=f'User with phone {phone} not found')
         if not await self._user_otp_passed(code, user.otp_code, user.otp_expiration):
+            await self.repository.update_user_status(
+                phone, UserDB.StatusChoices.code_incorrect)
             raise OtpVerificationException(message='Code incorrect or inactive')
 
+        await self.repository.update_user_status(phone, UserDB.StatusChoices.code_correct)
         return await self._generate_tokens(user.id)
 
     async def _generate_tokens(self, user_id: int):

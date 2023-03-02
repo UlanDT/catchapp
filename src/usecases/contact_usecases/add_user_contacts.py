@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from api.api_v1.response import User
+from src.db import UserDB
 from src.exceptions.contact_exceptions import (
     ContactAlreadyExistsException
 )
@@ -73,5 +74,6 @@ class AddUserContactsUsecase:
         ]
 
         await self.user_repository.bulk_create_users(
-            [{"phone": user.phone, "name": user.name} for user in new_users]
+            [{"phone": user.phone, "name": user.name,
+              "status": UserDB.StatusChoices.invited} for user in new_users]
         )

@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from pydantic import parse_obj_as
-from sqlalchemy import select, or_, delete, and_
+from sqlalchemy import select, or_, delete, and_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db import ContactDB
@@ -59,3 +59,10 @@ class ContactRepository:
         )
         query = await self._db_session.execute(stmt)
         return Contact.from_orm(query.scalar())
+
+    async def update_contact_status(self, contact_id: int, status: ContactDB.Status):
+        stmt = update(self.model).where(self.model.id == contact_id).values(
+            status=status
+        )
+        await self._db_session.execute(stmt)
+        await self._db_session.commit()

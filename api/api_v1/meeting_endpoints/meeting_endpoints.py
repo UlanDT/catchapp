@@ -6,17 +6,17 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from api.api_v1.depends import get_user
-from api.api_v1.response import User, MeetingResponse
+from api.api_v1.response import User, MeetingResponse, CommonResponse
 from src.db.db_session import AsyncSessionLocal
 from src.exceptions.contact_exceptions import ContactDoesNotExistException, \
     ContactNotReadyForBingoException
 from src.exceptions.meeting_exceptions import \
-    MeetingSlotsAlreadySelectedException
+    MeetingSlotsAlreadySelectedException, MeetingNotReadyException
 from src.repositories.contact_repository import ContactRepository
 from src.repositories.meeting_repository import MeetingRepository
 from src.usecases.meeting_usecases import (
     GetMeetingSlotsUsecase,
-    SetMeetingSlotsUsecase
+    SetMeetingSlotsUsecase, CallContactUsecase
 )
 
 
@@ -73,6 +73,7 @@ class SlotsIn(BaseModel):
     '/',
     status_code=status.HTTP_200_OK,
     description='Set meeting time for user',
+    response_model=MeetingResponse
 )
 async def get_user_contacts(
         slots_in: SlotsIn,
@@ -117,3 +118,44 @@ async def get_user_contacts(
                 'content': None
             }
         )
+
+
+@router.post(
+    '/call',
+    status_code=status.HTTP_200_OK,
+    description='Call contact',
+    response_model=CommonResponse
+)
+async def call_cantact(
+        contact_id: int,
+        user: User = Depends(get_user),
+):
+    async with AsyncSessionLocal() as session:
+        usecase = CallContactUsecase(
+            contact_repository=ContactRepository(session),
+        )
+    try:
+        await usecase.call_contact(user.id, contact_id)
+    except ContactDoesNotExistException as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'success': False,
+                'message': e.message,
+                'content': None
+            }
+        )
+    except MeetingNotReadyException as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'success': False,
+                'message': e.message,
+                'content': None
+            }
+        )
+    return CommonResponse(
+        success=True,
+        message='Success',
+        content='Changed status from call to success',
+    )

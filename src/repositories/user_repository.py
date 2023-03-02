@@ -36,7 +36,8 @@ class UserRepository:
         user_db = self.model(
             phone=phone,
             otp_code=code,
-            otp_expiration=otp_expiration
+            otp_expiration=otp_expiration,
+            status=UserDB.StatusChoices.code_sent
         )
 
         self._db_session.add(user_db)
@@ -52,7 +53,16 @@ class UserRepository:
         """Update user otp data during sending otp code."""
         await self._db_session.execute(
             update(self.model).where(self.model.phone == phone).values(
-                otp_code=code, otp_expiration=otp_expiration
+                otp_code=code, otp_expiration=otp_expiration,
+                status=UserDB.StatusChoices.code_sent
+            )
+        )
+        await self._db_session.commit()
+
+    async def update_user_status(self, phone: str, status: str) -> None:
+        await self._db_session.execute(
+            update(self.model).where(self.model.phone == phone).values(
+                status=status
             )
         )
         await self._db_session.commit()

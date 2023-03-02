@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from api.api_v1.response import BingoUserContacts, User
+from api.api_v1.response import BingoUserContacts
 from src.db import ContactDB
 from src.repositories.sync_repos import (
     SyncContactRepository,
@@ -18,9 +18,10 @@ class BingoUsecase:
     service: DateTimeService
 
     def schedule_meeting(self):
-        # self.start_bingo()
+        self.start_bingo()
         self.check_matched_users()
         self.check_for_call()
+        self.mark_meetings_as_inactive()
 
     def get_contacts_ready_for_bingo(self, user: BingoUserContacts):
         return [contact for contact in user.contacts if
@@ -80,6 +81,11 @@ class BingoUsecase:
                             meeting.contacts_id, ContactDB.Status.failed_match)
 
     def check_for_call(self):
+        """Set status of meeting to call or failed to call.
+
+        1) Call - 5 minutes before meeting time and 5 minutes after meeting time.
+        2) Failed to call - 5 minutes after meeting time have passed.
+        """
         meetings = self.meeting_repository.get_meeting_slots()
         for meeting in meetings:
             if meeting.contacts.status == ContactDB.Status.scheduled:
@@ -88,4 +94,17 @@ class BingoUsecase:
                 elif meeting.meeting_at > datetime.now() + timedelta(minutes=5):
                     self.contact_repository.update_contact_status(meeting.contacts_id, ContactDB.Status.failed_to_call)
 
+    def mark_meetings_as_inactive(self):
+        meetings = self.meeting_repository.get_meeting_slots()
+        final_statuses = [ContactDB.Status.success, ContactDB.Status.failed_to_call,
+                          ContactDB.Status.failed_bingo, ContactDB.Status.failed_to_call]
 
+        for meeting in meetings:
+            if meeting.contacts.status in final_statuses:
+                user_one = self.user_repository.get_user_by_id(meeting.contacts.user_id)
+                user_two = self.user_repository.get_user_by_id(meeting.contacts.contact_id)
+
+                max_hangout_time = max([user_one.hangout_time, user_two.hangout_time])
+
+                if datetime.timestamp(meeting.meeting_at) + max_hangout_time > datetime.timestamp(datetime.now()):
+                    self.contact_repository.update_contact_status(meeting.contacts_id, ContactDB.Status.inactive)
