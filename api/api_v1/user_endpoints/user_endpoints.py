@@ -71,7 +71,7 @@ async def update_user_profile(
             error=None,
             content=await usecase.update_user_profile(
                 user_in=user_in,
-                user_id=user
+                user=user
             ))
     except ImageNotFoundException as e:
         return JSONResponse(
