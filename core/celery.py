@@ -11,7 +11,7 @@ from src.usecases.bingo_usecase import BingoUsecase
 app = Celery("catchapp")
 app.autodiscover_tasks()
 
-TIMOUT = os.environ.get("TIMEOUT", 10)
+TIMOUT = os.environ.get("TIMEOUT", 180)
 
 
 @app.on_after_configure.connect
