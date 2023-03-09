@@ -14,10 +14,9 @@ AsyncSessionLocal = async_sessionmaker(
     class_=AsyncSession,
 )
 
-sync_engine = create_engine(url=settings.postgres_url,)
+sync_engine = create_engine(url=settings.postgres_url, pool_size=50)
 SessionLocal = sessionmaker(
     bind=sync_engine,
     expire_on_commit=False,
     class_=Session,
-    pool_size=50
 )
