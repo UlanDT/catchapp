@@ -3,13 +3,14 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from api.api_v1.depends import get_user
-from api.api_v1.response import UserResponse, User
+from api.api_v1.response import UserResponse, User, UserContactsResponse
 from src.db.db_session import AsyncSessionLocal
 from src.exceptions.image_exceptions import ImageNotFoundException
 from src.exceptions.user_exceptions import UserNotFoundException
 from src.repositories.user_repository import UserRepository
 from src.request_schemas.user_schemas import UserIn
 from src.usecases.update_user_profile_usecase import UpdateUserProfileUsecase
+from src.usecases.user_usecases.get_user_by_id_usecase import GetUserByIdUsecase
 
 router = APIRouter()
 
@@ -48,6 +49,38 @@ async def get_user_profile(
                 'content': None
             }
         )
+
+
+@router.get(
+    '/{user_id}',
+    status_code=status.HTTP_200_OK,
+    description='Get user by id',
+    response_model=UserContactsResponse,
+    dependencies=[Depends(get_user)]
+)
+async def get_user_by_id(
+        user_id: int,
+):
+    async with AsyncSessionLocal() as session:
+        usecase = GetUserByIdUsecase(
+            repository=UserRepository(session),
+        )
+    try:
+        user = await usecase.get_user_by_id(user_id)
+    except UserNotFoundException as e:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                'success': False,
+                'message': e.message,
+                'content': None
+            }
+        )
+    return UserContactsResponse(
+        success=True,
+        message='Success',
+        content=user
+    )
 
 
 @router.patch(

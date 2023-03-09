@@ -58,7 +58,8 @@ class ContactRepository:
             ))
         )
         query = await self._db_session.execute(stmt)
-        return Contact.from_orm(query.scalar())
+        contact = query.scalar()
+        return Contact.from_orm(contact) if contact else None
 
     async def update_contact_status(self, contact_id: int, status: ContactDB.Status):
         stmt = update(self.model).where(self.model.id == contact_id).values(

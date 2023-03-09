@@ -38,7 +38,7 @@ async def send_code(phone: PhoneIn):
             repository=UserRepository(session)
         )
     try:
-        await usecase.process_send_code(phone.phone)
+        user = await usecase.process_send_code(phone.phone)
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -52,7 +52,8 @@ async def send_code(phone: PhoneIn):
         status_code=status.HTTP_200_OK,
         content={
             'success': True,
-            'message': 'Message has been sent',
+            'message': {'data': 'Message has been sent',
+                        'registered': True if user else False},
             'content': None
         }
     )
