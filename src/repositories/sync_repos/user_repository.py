@@ -1,7 +1,7 @@
 from typing import List
 
 from pydantic import parse_obj_as
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 from api.api_v1.response import BingoUserContacts, User
@@ -17,7 +17,10 @@ class SyncUserRepository:
         self._db_session = db_session
 
     def get_all_users(self) -> List[BingoUserContacts]:
-        stmt = select(self.model).where(self.model.status == self.model.StatusChoices.full_data)
+        stmt = select(self.model).where(and_(
+            self.model.status == self.model.StatusChoices.full_data,
+            self.model.timezone is not None
+        ))
         query = self._db_session.execute(stmt)
         return parse_obj_as(List[BingoUserContacts], query.scalars().all())
 

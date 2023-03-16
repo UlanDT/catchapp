@@ -122,6 +122,15 @@ class UserRepository:
         await self._db_session.refresh(user_db)
         return User.from_orm(user_db)
 
+    async def set_user_fcm_token_and_device(self, user: User, fcm_token: str, device: str):
+        """Set user's fcm_token and device."""
+        await self._db_session.execute(
+            update(self.model).where(self.model.id == user.id).values(
+                fcm_token=fcm_token, device=device
+            )
+        )
+        await self._db_session.commit()
+
     async def get_users_by_phone(self, phones: List[str]) -> List[User]:
         """Get list of users by their phone."""
 

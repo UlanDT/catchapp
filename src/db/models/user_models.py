@@ -37,7 +37,9 @@ class UserDB(Base):
     otp_expiration = Column(DateTime(timezone=True), nullable=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(),
                         onupdate=func.now(), nullable=False)
-    # contacts = relationship('ContactDB', lazy='selectin')
+
+    fcm_token = Column(String(255), nullable=True)
+    device = Column(String(12), nullable=True)
 
     image = relationship('ImageStorageDB', lazy='selectin')
     contacts = relationship("ContactDB", lazy='selectin', foreign_keys="ContactDB.user_id", backref='contact_user')
