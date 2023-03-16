@@ -66,17 +66,10 @@ class ContactDB(Base):
     status = Column(String(255), nullable=True)
 
     user = relationship("UserDB", lazy='selectin', foreign_keys="ContactDB.contact_id")
-    meetings = relationship("MeetingDB", uselist=False, back_populates="contacts")
+    meetings = relationship("MeetingDB", uselist=False, back_populates="contacts", lazy='selectin')
 
     __table_args__ = (
         UniqueConstraint(
             'user_id', 'contact_id',
             name='_user_id_uc'),
     )
-
-
-# задачка
-# будет проходить по каждому юзеру и вытаскивать hangout time
-# пройти по каждому их контакту и вытащить hangout_time каждого из контактов
-# в случае если hangout_time позволяет им замачтиться, то начать бинго
-# когда у юзера с его контаком был бинго до этого?

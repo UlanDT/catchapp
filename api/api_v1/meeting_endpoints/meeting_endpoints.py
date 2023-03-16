@@ -68,7 +68,8 @@ class SlotsIn(BaseModel):
     contact_id: int
     slots: Dict[str, float]
 
-
+# TODO timstamp as int
+# TODO +37498513580 test in server
 @router.post(
     '/',
     status_code=status.HTTP_200_OK,

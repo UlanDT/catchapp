@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON, TIMESTAMP
 from sqlalchemy.orm import relationship
 
@@ -14,4 +14,4 @@ class MeetingDB(Base):
     user_data = Column(JSON())
     contact_data = Column(JSON())
     slots = Column(JSON())
-    contacts = relationship("ContactDB", back_populates="meetings")
+    contacts = relationship("ContactDB", back_populates="meetings", lazy='selectin')

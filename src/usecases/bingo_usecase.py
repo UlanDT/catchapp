@@ -89,8 +89,10 @@ class BingoUsecase:
         meetings = self.meeting_repository.get_meeting_slots()
         for meeting in meetings:
             if meeting.contacts.status == ContactDB.Status.scheduled:
+
                 if datetime.now() - timedelta(minutes=5) < meeting.meeting_at < datetime.now() + timedelta(minutes=5):
                     self.contact_repository.update_contact_status(meeting.contacts_id, ContactDB.Status.call)
+
                 elif meeting.meeting_at > datetime.now() + timedelta(minutes=5):
                     self.contact_repository.update_contact_status(meeting.contacts_id, ContactDB.Status.failed_to_call)
 
