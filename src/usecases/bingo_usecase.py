@@ -36,9 +36,12 @@ class BingoUsecase:
             contacts = self.get_contacts_ready_for_bingo(user)
 
             for contact in contacts:
+                if user.timezone is None or contact.user.timezone is None:
+                    continue
+
                 slots = self.service.generate_nine_time_slots_for_meeting(
                     user.timezone, contact.user.timezone)
-                print(slots)
+
                 self.meeting_repository.update_or_create_slots(contact.id, slots)
                 self.contact_repository.update_contact_status(contact.id, ContactDB.Status.bingo)
 
