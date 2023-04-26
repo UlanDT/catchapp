@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from api.api_v1.response import BingoUserContacts
+from api.api_v1.response import BingoUserContacts, ContactUser
+from src.clients.firebase import FirebaseClient
 from src.db import ContactDB
 from src.repositories.sync_repos import (
     SyncContactRepository,
@@ -44,6 +45,7 @@ class BingoUsecase:
 
                 self.meeting_repository.update_or_create_slots(contact.id, slots)
                 self.contact_repository.update_contact_status(contact.id, ContactDB.Status.bingo)
+                self.send_push_notifications(user, contact, ContactDB.Status.bingo)
 
     def check_matched_users(self):
         """Check if users have selected meetings and set status to
@@ -113,3 +115,13 @@ class BingoUsecase:
 
                 if datetime.timestamp(meeting.meeting_at) + max_hangout_time > datetime.timestamp(datetime.now()):
                     self.contact_repository.update_contact_status(meeting.contacts_id, ContactDB.Status.inactive)
+
+    def send_push_notifications(self, user: BingoUserContacts, contact: ContactUser, status: str) -> None:
+        if status == ContactDB.Status.bingo:
+            if user.fcm_token is not None and user.device is not None:
+                if user.device == 'android':
+                    FirebaseClient(
+                        fcm_token=user.fcm_token,
+                        # title=
+                    )
+

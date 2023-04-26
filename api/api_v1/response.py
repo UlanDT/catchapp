@@ -45,6 +45,9 @@ class User(BaseModel):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
 
+    fcm_token: Optional[str]
+    device: Optional[str]
+
     class Config:
         orm_mode = True
 

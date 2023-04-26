@@ -63,7 +63,6 @@ class FirebaseClient:
                 )
             )
         )
-
         try:
             messaging.send(message)
         except Exception as e:

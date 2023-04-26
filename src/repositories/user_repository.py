@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Dict
 
 from pydantic import parse_obj_as
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from psycopg2.errorcodes import (
@@ -43,6 +43,13 @@ class UserRepository:
         self._db_session.add(user_db)
         await self._db_session.commit()
         await self._db_session.refresh(user_db)
+
+    async def delete_user(self, user_id: int) -> None:
+        """Delete user."""
+        await self._db_session.execute(
+            delete(self.model).where(self.model.id == user_id)
+        )
+        await self._db_session.commit()
 
     async def update_user_otp(
             self,

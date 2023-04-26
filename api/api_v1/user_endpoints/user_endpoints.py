@@ -4,13 +4,15 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from api.api_v1.depends import get_user
-from api.api_v1.response import UserResponse, User, UserContactsResponse
+from api.api_v1.response import UserResponse, User, UserContactsResponse, CommonResponse
+from src.clients.firebase import FirebaseClient
 from src.db.db_session import AsyncSessionLocal
 from src.exceptions.image_exceptions import ImageNotFoundException
 from src.exceptions.user_exceptions import UserNotFoundException, IncorrectModelException
 from src.repositories.user_repository import UserRepository
 from src.request_schemas.user_schemas import UserIn
 from src.usecases.update_user_profile_usecase import UpdateUserProfileUsecase
+from src.usecases.user_usecases.delete_user_profile_usecase import DeleteUserProfileUsecase
 from src.usecases.user_usecases.get_user_by_id_usecase import GetUserByIdUsecase
 from src.usecases.user_usecases.set_fcm_usecase import SetFcmUsecase
 
@@ -137,6 +139,25 @@ async def update_user_profile(
         )
 
 
+@router.delete(
+    '/',
+    status_code=status.HTTP_200_OK,
+    description='Delete user profile',
+)
+async def delete_user_profile(
+        user: User = Depends(get_user),
+):
+    async with AsyncSessionLocal() as session:
+        usecase = DeleteUserProfileUsecase(
+            repository=UserRepository(session)
+        )
+        await usecase.delete_user_profile(user)
+        return CommonResponse(
+            success=True,
+            message="User has been deleted.",
+        )
+
+
 class UserFcmIn(BaseModel):
     """Schema for fcm token and phone model."""
 
@@ -182,6 +203,22 @@ async def set_user_fcm(
             content={
                 'success': False,
                 'message': str(e),
+                'content': None
+            }
+        )
+
+@router.post(
+    '/test/',
+    status_code=status.HTTP_200_OK,
+)
+async def send_token():
+    a = FirebaseClient(fcm_token='cXXxOcqGQJmS2dPw1E6jh7:APA91bHJMaGElT6JURhnJfMGZ-9MWhobi-SNCzz5-QCuyz9QIOuVOz9AVItzYrUeGy0kJdhFdXSaimEL2t2X9q2NcvEqGc0Wv7eCZWuRn29hMUqDywfwnr_UY08pEHRlLIeDDqAuXL8u',
+                   title='Testing catchapp push', body='Testing catchapp push notifications')
+    a.send_android_push_notification()
+    return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                'success': True,
                 'content': None
             }
         )
