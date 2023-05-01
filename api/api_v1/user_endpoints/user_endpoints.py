@@ -212,7 +212,7 @@ async def set_user_fcm(
     status_code=status.HTTP_200_OK,
 )
 async def send_token():
-    a = FirebaseClient(fcm_token='cXXxOcqGQJmS2dPw1E6jh7:APA91bHJMaGElT6JURhnJfMGZ-9MWhobi-SNCzz5-QCuyz9QIOuVOz9AVItzYrUeGy0kJdhFdXSaimEL2t2X9q2NcvEqGc0Wv7eCZWuRn29hMUqDywfwnr_UY08pEHRlLIeDDqAuXL8u',
+    a = FirebaseClient(fcm_token='dPeZpbm9RSqzM9ULa9l9oS:APA91bFyCaj98veBjrxqjzwU5YUmCbd_KcjKPctwp64Tykl4ValPWykc5xO24Nw4c_nays8jWBihZi0JOEEBEANbZq_pnr0HAJNYPG2qkd1NzEl_OQUanMrTN3CSgduCyYTXwGfKO9bF',
                    title='Testing catchapp push', body='Testing catchapp push notifications')
     a.send_android_push_notification()
     return JSONResponse(
