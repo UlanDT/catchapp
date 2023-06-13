@@ -31,7 +31,7 @@ class SendCodeUseCase:
         code_data = await self._get_message()
         await self._set_otp_for_user(phone, code_data)
         print("sending message")
-        await self.client.send_message(phone, code_data.message)
+        # await self.client.send_message(phone, code_data.message)
         return await self.repository.get_user_by_phone(phone)
 
     async def _get_message(self):
